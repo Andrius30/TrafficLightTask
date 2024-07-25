@@ -1,8 +1,10 @@
 using Andrius.Core.Timers;
 using Sirenix.OdinInspector;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+[Flags]
 public enum LightStates
 {
     Red,
@@ -13,6 +15,8 @@ public enum LightStates
 
 public class IntersectionController : MonoBehaviour
 {
+    public Action<LightStates> OnStateChanged;
+
     [SerializeField] SignalSettings signalSettings;
 
     [ShowInInspector] List<IComandLight> lightsGroupA; // just for testing purposes show in inspector
@@ -45,6 +49,7 @@ public class IntersectionController : MonoBehaviour
         {
             light.Init();
             light.Execute(LightStates.Red);
+            OnStateChanged?.Invoke(LightStates.Red);
         }
         foreach (var light in lightsGroupB)
         {
@@ -80,6 +85,7 @@ public class IntersectionController : MonoBehaviour
         //lightIndex = lightIndex % TOTAL_LIGHTS;
         LightStates currentStateA, currentStateB;
         AssignLightStates(out currentStateA, out currentStateB);
+        OnStateChanged?.Invoke(currentStateA);
         lightsGroupA.ForEach(x => x.Execute(currentStateA));
         lightsGroupB.ForEach(x => x.Execute(currentStateB));
         ControllLightIndex();

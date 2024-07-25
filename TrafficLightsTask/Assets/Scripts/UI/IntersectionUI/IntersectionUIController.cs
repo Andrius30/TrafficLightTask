@@ -7,6 +7,7 @@ public class IntersectionUIController : MonoBehaviour
 {
     [SerializeField] IntersectionController intersectionController;
     [SerializeField] TextMeshProUGUI infoText;
+    [SerializeField] TextMeshProUGUI currentLightText;
     [SerializeField] float infoTextDurationTime = 1f;
 
     Timer infoTextDurationTimer;
@@ -34,6 +35,7 @@ public class IntersectionUIController : MonoBehaviour
         LightStates lightStates = intersectionController.GroupALightState;
         GetResponse(lightStates);
     }
+    public void PrintLighState(LightStates lightStates) => currentLightText.text = $"{lightStates}";
 
     void GetResponse(LightStates lightStates)
     {
@@ -61,4 +63,13 @@ public class IntersectionUIController : MonoBehaviour
     }
     void ResetText() => infoText.text = "";
     void OnDone() => ResetText();
+
+    void OnEnable()
+    {
+        intersectionController.OnStateChanged += PrintLighState;
+    }
+    void OnDisable()
+    {
+        intersectionController.OnStateChanged -= PrintLighState;
+    }
 }
