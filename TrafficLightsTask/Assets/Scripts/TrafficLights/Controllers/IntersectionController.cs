@@ -1,5 +1,5 @@
 using Andrius.Core.Timers;
-using System;
+using Sirenix.OdinInspector;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,8 +15,8 @@ public class IntersectionController : MonoBehaviour
 {
     [SerializeField] SignalSettings signalSettings;
 
-    [SerializeField] List<TraficLight> lightsGroupA;
-    [SerializeField] List<TraficLight> lightsGroupB;
+    [ShowInInspector] List<IComandLight> lightsGroupA; // just for testing purposes show in inspector
+    [ShowInInspector] List<IComandLight> lightsGroupB;
 
     LightStates groupA;
     LightStates groupB;
@@ -40,6 +40,7 @@ public class IntersectionController : MonoBehaviour
     }
     void Start()
     {
+        InitializeLists();
         foreach (var light in lightsGroupA)
         {
             light.Init();
@@ -51,12 +52,29 @@ public class IntersectionController : MonoBehaviour
             light.Execute(LightStates.Green);
         }
     }
+
+
     void Update()
     {
         if (switchStateTimer == null) return;
         switchStateTimer.StartTimer();
     }
 
+    void InitializeLists()
+    {
+        lightsGroupA = new List<IComandLight>();
+        lightsGroupB = new List<IComandLight>();
+        Transform groupA = transform.Find("LightGroupA");
+        Transform groupB = transform.Find("LightGroupB");
+        for (int i = 0; i < groupA.childCount; i++)
+        {
+            lightsGroupA.Add(groupA.GetChild(i).GetComponent<IComandLight>());
+        }
+        for (int i = 0; i < groupB.childCount; i++)
+        {
+            lightsGroupB.Add(groupB.GetChild(i).GetComponent<IComandLight>());
+        }
+    }
     void OnDone()
     {
         //lightIndex = lightIndex % TOTAL_LIGHTS;
